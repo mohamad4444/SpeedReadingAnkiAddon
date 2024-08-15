@@ -1,5 +1,7 @@
 {
     "reveal_answer_delay": 3000,
     "skip_card_delay": 2000,
-    "auto_reveal_enabled": true
+    "auto_reveal_enabled": true,
+    "autofail": false,
+    "auto_show_answer": false
 }
