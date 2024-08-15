@@ -6,19 +6,18 @@ from aqt.sound import play_clicked_audio
 from aqt.utils import showInfo
 import os
 
-
-
+miliseconds_per_character = 56
+average_reading_speed_per_minute = 238  # words
+average_characters_per_word = 4.7
+average_speed_per_character = 1000 / (average_reading_speed_per_minute * average_characters_per_word / 60)
+average_speed_per_character = 56
 class CustomReviewer(Reviewer):
     """Custom Reviewer class to extend default functionality."""
 
     def __init__(self, *args, **kwargs):
         # Initialize with the necessary arguments for the base class
         super().__init__(*args, **kwargs)
-        self.miliseconds_per_character=56
-        self.average_reading_speed_per_minute=238 #words
-        self.average_characters_per_word=4.7
-        self.average_speed_per_character= 1000/(self.average_reading_speed_per_minute*self.average_characters_per_word/60)
-        self.average_speed_per_character=56
+
     def log(self,message):
         addon_dir = os.path.dirname(__file__)
         log_file = os.path.join(addon_dir, 'log.txt')
@@ -31,7 +30,7 @@ class CustomReviewer(Reviewer):
         super()._showQuestion()
         note = self.card.note()
         field_text = note['Word']
-        reveal_question_delay=len(field_text)*self.miliseconds_per_character
+        reveal_question_delay=len(field_text)*miliseconds_per_character
         self.log(field_text)
         self.log(reveal_question_delay)
         QTimer.singleShot(reveal_question_delay, self._showAnswer)
@@ -41,7 +40,11 @@ class CustomReviewer(Reviewer):
 
     def _showAnswer(self):
         super()._showAnswer()
-        QTimer.singleShot(4000, lambda: self._answerCard(1))
+        answers_len=0
+        for field in ["ArabicTranslation","EnglishTranslation","Example","PluralForm","Gender"]:
+            answers_len=answers_len+len(field)
+        anwer_fail_delay=answers_len*miliseconds_per_character
+        QTimer.singleShot(anwer_fail_delay, lambda: self._answerCard(1))
 
     def _answerCard(self, ease):
         """Custom behavior before answering the card."""
