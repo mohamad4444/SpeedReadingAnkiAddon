@@ -22,7 +22,7 @@ class CustomReviewer(Reviewer):
         addon_dir = os.path.dirname(__file__)
         log_file = os.path.join(addon_dir, 'log.txt')
         with open(log_file, 'a') as f:
-            f.write(message + '\n')
+            f.write(str(message) + '\n')
 
     def _showQuestion(self):
         """Custom behavior before showing the question."""
