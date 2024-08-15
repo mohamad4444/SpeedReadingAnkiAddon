@@ -4,6 +4,9 @@ from aqt.reviewer import Reviewer
 from anki.hooks import wrap
 from aqt.sound import play_clicked_audio
 from aqt.utils import showInfo
+import os
+
+
 
 class CustomReviewer(Reviewer):
     """Custom Reviewer class to extend default functionality."""
@@ -11,12 +14,28 @@ class CustomReviewer(Reviewer):
     def __init__(self, *args, **kwargs):
         # Initialize with the necessary arguments for the base class
         super().__init__(*args, **kwargs)
+        self.miliseconds_per_character=56
+        self.average_reading_speed_per_minute=238 #words
+        self.average_characters_per_word=4.7
+        self.average_speed_per_character= 1000/(self.average_reading_speed_per_minute*self.average_characters_per_word/60)
+        self.average_speed_per_character=56
+    def log(self,message):
+        addon_dir = os.path.dirname(__file__)
+        log_file = os.path.join(addon_dir, 'log.txt')
+        with open(log_file, 'a') as f:
+            f.write(message + '\n')
 
     def _showQuestion(self):
         """Custom behavior before showing the question."""
         # Call the base class method
         super()._showQuestion()
-        QTimer.singleShot(4000, self._showAnswer)
+        note = self.card.note()
+        field_text = note['Word']
+        reveal_question_delay=len(field_text)*self.miliseconds_per_character
+        self.log(field_text)
+        self.log(reveal_question_delay)
+        QTimer.singleShot(reveal_question_delay, self._showAnswer)
+
         # Add custom functionality here
         print("Custom behavior: Question is being shown")
 
@@ -41,16 +60,15 @@ class CustomReviewer(Reviewer):
         showInfo("Custom button clicked!")
     def _bottomHTML(self) -> str:
         """Override to add a custom button."""
-        base_html = super()._bottomHTML()
-        custom_button_html = """
-        <td align=end valign=top class=stat>
+
+        base_html = """
             <button title="Custom Button" onclick="pycmd('custom_action');">
                 Custom Button
             </button>
-        </td>
         """
+        base_html+=super()._bottomHTML()
         # Inject the custom button into the existing HTML
-        return base_html.replace("</td>\n</tr>", custom_button_html + "</td>\n</tr>")
+        return base_html
 
 
     def _linkHandler(self, url: str) -> None:
