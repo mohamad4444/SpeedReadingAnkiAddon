@@ -1,0 +1,9 @@
+{
+    "name": "Speed Reading with Auto Reveal and Skip",
+    "version": "1.0",
+    "mod": 1234567890,
+    "author": "Your Name",
+    "description": "Automatically reveal answers and skip to the next card for speed reading.",
+    "target": "2.1.45",
+    "min_point_version": 0
+}
